@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qegle.rsstestapp.R
-import com.qegle.rsstestapp.model.FeedItem
+import com.qegle.rsstestapp.model.parser.FeedItem
 import kotlinx.android.synthetic.main.v_message.view.*
 
 class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ChannelsViewHolder>() {

@@ -2,8 +2,8 @@ package com.qegle.rsstestapp.util
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import com.qegle.rsstestapp.model.FeedItem
-import com.qegle.rsstestapp.model.RSSChannel
+import com.qegle.rsstestapp.model.parser.FeedItem
+import com.qegle.rsstestapp.model.parser.RSSChannel
 import com.qegle.rsstestapp.network.RssController
 
 

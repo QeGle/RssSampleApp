@@ -2,8 +2,8 @@ package com.qegle.rsstestapp.network
 
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import com.qegle.rsstestapp.model.Feed
-import com.qegle.rsstestapp.model.FeedItem
+import com.qegle.rsstestapp.model.parser.Feed
+import com.qegle.rsstestapp.model.parser.FeedItem
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,7 +29,7 @@ class RssService(val rssAdapter: RssAdapter) {
 			}
 			
 			override fun onResponse(call: Call<Feed?>?, response: Response<Feed?>?) {
-				val channels = response?.body()?.channel?.feedItems ?: return
+				val channels = response?.body()?.items?.feedItems ?: return
 				
 				val value = data.value ?: arrayListOf()
 				value.addAll(channels)

@@ -6,7 +6,7 @@ import android.arch.lifecycle.LiveData
 import android.util.Log
 import com.qegle.rsstestapp.util.RSSRepository
 import com.qegle.rsstestapp.view.OnItemClickListener
-import com.qegle.rsstestapp.model.FeedItem
+import com.qegle.rsstestapp.model.parser.FeedItem
 
 
 class MessagesViewModel(application: Application) : AndroidViewModel(application), OnItemClickListener {

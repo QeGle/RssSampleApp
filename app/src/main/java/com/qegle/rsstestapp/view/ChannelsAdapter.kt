@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qegle.rsstestapp.R
-import com.qegle.rsstestapp.model.RSSChannel
+import com.qegle.rsstestapp.model.parser.RSSChannel
 import kotlinx.android.synthetic.main.v_channel.view.*
 
 class ChannelsAdapter : RecyclerView.Adapter<ChannelsAdapter.ChannelsViewHolder>() {

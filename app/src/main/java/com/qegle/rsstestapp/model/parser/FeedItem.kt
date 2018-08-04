@@ -1,4 +1,4 @@
-package com.qegle.rsstestapp.model
+package com.qegle.rsstestapp.model.parser
 
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root

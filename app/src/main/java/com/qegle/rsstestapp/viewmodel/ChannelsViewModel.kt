@@ -9,7 +9,7 @@ import com.qegle.rsstestapp.util.Constants
 import com.qegle.rsstestapp.util.RSSRepository
 import com.qegle.rsstestapp.view.MessagesA
 import com.qegle.rsstestapp.view.OnChannelClickListener
-import com.qegle.rsstestapp.model.RSSChannel
+import com.qegle.rsstestapp.model.parser.RSSChannel
 
 
 class ChannelsViewModel(application: Application) : AndroidViewModel(application), OnChannelClickListener {
