@@ -20,7 +20,7 @@ class RSSRepository(val context: Context) {
 		val data = MutableLiveData<ArrayList<Channel>>()
 		data.value = arrayListOf()
 		
-		thread {
+		thread(start = true) {
 			val list = database?.channelsDao()?.getAll() ?: emptyList()
 			Handler(context.mainLooper).post { data.value = ArrayList(list) }
 		}
@@ -39,38 +39,56 @@ class RSSRepository(val context: Context) {
 	}
 	
 	fun addChannel(channel: Channel) {
-		database?.channelsDao()?.insertOrReplace(channel)
+		thread(start = true) { database?.channelsDao()?.insertOrReplace(channel) }
 	}
 	
 	fun deleteChannel(channel: Channel) {
-		database?.channelsDao()?.delete(channel)
+		thread(start = true) { database?.channelsDao()?.delete(channel) }
 	}
 	
-	fun getMessages(id: String): LiveData<ArrayList<Item>> {
-		val data = MutableLiveData<ArrayList<Item>>()
-		
-		val controller = RssController("https://habr.com/rss/feed/posts/9b31673a34bb9a38bc2e1162d330534f/")
-		
-		val list = database?.itemsDao()?.getAll() ?: emptyList()
-		data.value = ArrayList(list)
-		
-		controller.rssService.getFeed(object : OnFeedRequestSuccessListener {
-			override fun success(feeds: ArrayList<FeedItem>) {
-				val itemsNetwork = arrayListOf<Item>()
-				feeds.forEach {
-					itemsNetwork.add(Item(it.pubDate, it.title, it.link, it.description, id))
-				}
-				
-				itemsNetwork.forEach {
-					if (!isExist(it))
-						database?.itemsDao()?.insertOrReplace(it)
-				}
-				
-				
-				val list = database?.itemsDao()?.getAll() ?: emptyList()
-				data.value = ArrayList(list)
+	fun deleteChannelById(id: String) {
+		thread(start = true) {
+			val list = database?.channelsDao()?.get(id)
+			if ((list != null && list.isNotEmpty())) {
+				database?.channelsDao()?.delete(list[0])
 			}
-		})
+		}
+	}
+	
+	fun getMessages(link: String): LiveData<ArrayList<Item>> {
+		val data = MutableLiveData<ArrayList<Item>>()
+		setValue(data, arrayListOf())
+		
+		thread(start = true) {
+			val controller = RssController(link)
+			val list = database?.itemsDao()?.getAll() ?: emptyList()
+			setValue(data, list)
+			
+			controller.rssService.getFeed(object : OnFeedRequestSuccessListener {
+				override fun success(feeds: ArrayList<FeedItem>) {
+					thread(start = true) {
+						val itemsNetwork = arrayListOf<Item>()
+						feeds.forEach {
+							itemsNetwork.add(Item(it.pubDate, it.title, it.link, it.description, link))
+						}
+						
+						itemsNetwork.forEach {
+							if (!isExist(it))
+								database?.itemsDao()?.insertOrReplace(it)
+						}
+						
+						
+						val list = database?.itemsDao()?.getAll() ?: emptyList()
+						setValue(data, list)
+					}
+				}
+			})
+		}
 		return data
+	}
+	
+	
+	fun setValue(data: MutableLiveData<ArrayList<Item>>, list: List<Item>) {
+		Handler(context.mainLooper).post { data.value = ArrayList(list) }
 	}
 }

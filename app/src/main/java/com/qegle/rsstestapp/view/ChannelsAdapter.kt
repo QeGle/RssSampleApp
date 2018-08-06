@@ -9,18 +9,28 @@ import com.qegle.rsstestapp.model.room.Channel
 import kotlinx.android.synthetic.main.v_channel.view.*
 
 class ChannelsAdapter : RecyclerView.Adapter<ChannelsAdapter.ChannelsViewHolder>() {
-	var channelsArrayList: ArrayList<Channel> = arrayListOf()
+	private var channelsArrayList: ArrayList<Channel> = arrayListOf()
 	var onChannelClickListener: OnChannelClickListener? = null
 	override fun onBindViewHolder(holder: ChannelsViewHolder, position: Int) {
 		val channel = channelsArrayList[position]
 		holder.tvTitle.text = channel.title
-		holder.tvUrl.text = channel.link
+		var link = channel.link
+		
+		if (link.contains("://")) {
+			link = link.split("://")[1]
+		}
+		
+		if (link.contains("/")) {
+			link = link.split("/")[0]
+		}
+		
+		holder.tvUrl.text = link
 		holder.root.setOnLongClickListener {
-			onChannelClickListener?.onLongClick(channel.title)
+			onChannelClickListener?.onLongClick(channel.link)
 			true
 		}
 		
-		holder.root.setOnClickListener { onChannelClickListener?.onClick(channel.title) }
+		holder.root.setOnClickListener { onChannelClickListener?.onClick(channel.link) }
 	}
 	
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelsViewHolder {

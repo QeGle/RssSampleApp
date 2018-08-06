@@ -4,7 +4,6 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.content.Intent
-import android.util.Log
 import com.qegle.rsstestapp.model.room.Channel
 import com.qegle.rsstestapp.util.Constants
 import com.qegle.rsstestapp.util.RSSRepository
@@ -22,7 +21,8 @@ class ChannelsViewModel(application: Application) : AndroidViewModel(application
 	}
 	
 	override fun onLongClick(id: String) {
-		Log.d(TAG, "onLongClick: $id")
+		repository.deleteChannelById(id)
+		channelsArray = repository.getChannels()
 	}
 	
 	fun addChannel(channelName: String, channelUrl: String) {
@@ -31,7 +31,7 @@ class ChannelsViewModel(application: Application) : AndroidViewModel(application
 	}
 	
 	var channelsArray: LiveData<ArrayList<Channel>>
-	var repository = RSSRepository(application)
+	private var repository = RSSRepository(application)
 	
 	init {
 		channelsArray = repository.getChannels()

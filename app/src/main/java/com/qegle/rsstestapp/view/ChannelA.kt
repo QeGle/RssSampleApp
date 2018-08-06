@@ -25,7 +25,13 @@ class ChannelA : AppCompatActivity() {
 		
 		observeViewModel(viewModel)
 		btnAddChannel.setOnClickListener {
-			// TODO: 06.08.2018 add logic
+			val channelAddD = ChannelAddD.newInstance()
+			channelAddD.onChannelAddListener = object : OnChannelAddListener {
+				override fun add(channelName: String, channelLink: String) {
+					viewModel.addChannel(channelName, channelLink)
+				}
+			}
+			channelAddD.show(supportFragmentManager, "MessageD")
 		}
 	}
 	
