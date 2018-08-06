@@ -5,11 +5,11 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.content.Intent
 import android.util.Log
+import com.qegle.rsstestapp.model.room.Channel
 import com.qegle.rsstestapp.util.Constants
 import com.qegle.rsstestapp.util.RSSRepository
 import com.qegle.rsstestapp.view.MessagesA
 import com.qegle.rsstestapp.view.OnChannelClickListener
-import com.qegle.rsstestapp.model.parser.RSSChannel
 
 
 class ChannelsViewModel(application: Application) : AndroidViewModel(application), OnChannelClickListener {
@@ -25,8 +25,13 @@ class ChannelsViewModel(application: Application) : AndroidViewModel(application
 		Log.d(TAG, "onLongClick: $id")
 	}
 	
-	var channelsArray: LiveData<ArrayList<RSSChannel>>
-	var repository = RSSRepository()
+	fun addChannel(channelName: String, channelUrl: String) {
+		repository.addChannel(Channel(channelName, channelUrl))
+		channelsArray = repository.getChannels()
+	}
+	
+	var channelsArray: LiveData<ArrayList<Channel>>
+	var repository = RSSRepository(application)
 	
 	init {
 		channelsArray = repository.getChannels()

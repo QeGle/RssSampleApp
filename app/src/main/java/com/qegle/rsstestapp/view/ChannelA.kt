@@ -9,6 +9,7 @@ import com.qegle.rsstestapp.R
 import com.qegle.rsstestapp.viewmodel.ChannelsViewModel
 import kotlinx.android.synthetic.main.a_channel.*
 
+
 class ChannelA : AppCompatActivity() {
 	
 	lateinit var channelsAdapter: ChannelsAdapter
@@ -23,6 +24,9 @@ class ChannelA : AppCompatActivity() {
 		rvChannels.layoutManager = LinearLayoutManager(this)
 		
 		observeViewModel(viewModel)
+		btnAddChannel.setOnClickListener {
+			// TODO: 06.08.2018 add logic
+		}
 	}
 	
 	

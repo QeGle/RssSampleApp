@@ -7,10 +7,11 @@ import android.content.Context
 import com.qegle.rsstestapp.model.room.Channel
 import com.qegle.rsstestapp.model.room.Item
 
-@Database(entities = [Channel::class, Item::class], version = 1, exportSchema = false)
+@Database(entities = [Channel::class, Item::class], version = 2)
 abstract class RSSDatabase : RoomDatabase() {
 	
-	abstract fun rssDao(): RSSDao
+	abstract fun channelsDao(): ChannelsDao
+	abstract fun itemsDao(): ItemsDao
 	
 	
 	companion object {

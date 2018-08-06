@@ -1,9 +1,8 @@
 package com.qegle.rsstestapp.network
 
-import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.qegle.rsstestapp.model.parser.Feed
-import com.qegle.rsstestapp.model.parser.FeedItem
+import com.qegle.rsstestapp.util.OnFeedRequestSuccessListener
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +20,7 @@ class RssController(url: String) {
 
 class RssService(val rssAdapter: RssAdapter) {
 	private val TAG = "RssService"
-	fun getFeed(data: MutableLiveData<ArrayList<FeedItem>>) {
+	fun getFeed(onFeedRequestSuccessListener: OnFeedRequestSuccessListener) {
 		
 		rssAdapter.getItems().enqueue(object : Callback<Feed?> {
 			override fun onFailure(call: Call<Feed?>?, t: Throwable?) {
@@ -29,12 +28,9 @@ class RssService(val rssAdapter: RssAdapter) {
 			}
 			
 			override fun onResponse(call: Call<Feed?>?, response: Response<Feed?>?) {
-				val channels = response?.body()?.items?.feedItems ?: return
+				val channels = response?.body()?.items?.feedItems ?: arrayListOf()
 				
-				val value = data.value ?: arrayListOf()
-				value.addAll(channels)
-				
-				data.value = value
+				onFeedRequestSuccessListener.success(channels)
 			}
 		})
 	}

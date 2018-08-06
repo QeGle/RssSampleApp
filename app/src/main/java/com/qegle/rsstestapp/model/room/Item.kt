@@ -6,13 +6,14 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.PrimaryKey
 
 @Entity(foreignKeys = [ForeignKey(entity = Channel::class,
-		parentColumns = arrayOf("uid"),
-		childColumns = arrayOf("ownerId"),
+		parentColumns = arrayOf("link"),
+		childColumns = arrayOf("channelId"),
 		onDelete = CASCADE)])
-class Item(@PrimaryKey(autoGenerate = true)
-           var id: Int?,
+class Item(
            var date: String,
            var title: String,
            var link: String,
            var description: String,
-           var channelId: String)
+           var channelId: String,
+           @PrimaryKey(autoGenerate = true)
+           var id: Int = 0)
