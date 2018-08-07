@@ -1,5 +1,7 @@
 package com.qegle.rsstestapp.view
 
-interface OnChannelClickListener:OnItemClickListener {
-	fun onLongClick(id: String)
+import com.qegle.rsstestapp.model.room.Channel
+
+interface OnChannelClickListener:OnLinkClickListener {
+	fun onLongClick(channel: Channel)
 }

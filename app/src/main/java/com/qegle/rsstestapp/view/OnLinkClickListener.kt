@@ -1,5 +1,5 @@
 package com.qegle.rsstestapp.view
 
-interface OnItemClickListener{
+interface OnLinkClickListener{
 	fun onClick(id:String)
 }

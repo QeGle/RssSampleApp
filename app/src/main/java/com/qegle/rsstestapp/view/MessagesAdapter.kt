@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.v_message.view.*
 
 class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ChannelsViewHolder>() {
 	private var messagesArrayList: ArrayList<Item> = arrayListOf()
-	var onItemClickListener: OnItemClickListener? = null
+	var onLinkClickListener: OnLinkClickListener? = null
 	override fun onBindViewHolder(holder: ChannelsViewHolder, position: Int) {
 		val item = messagesArrayList[position]
 		holder.tvTitle.text = item.title
@@ -21,7 +21,7 @@ class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ChannelsViewHolder>
 		holder.root.setOnClickListener {
 			val link = item.link
 			if (link != null)
-				onItemClickListener?.onClick(link)
+				onLinkClickListener?.onClick(link)
 		}
 	}
 	

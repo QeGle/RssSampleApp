@@ -1,94 +1,91 @@
 package com.qegle.rsstestapp.util
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.content.Context
-import android.os.Handler
-import com.qegle.rsstestapp.model.parser.FeedItem
 import com.qegle.rsstestapp.model.room.Channel
 import com.qegle.rsstestapp.model.room.Item
-import com.qegle.rsstestapp.network.RssController
+import com.qegle.rsstestapp.network.RssLoader
 import com.qegle.rsstestapp.room.RSSDatabase
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 import kotlin.concurrent.thread
 
 
-class RSSRepository(val context: Context) {
+class RSSRepository(context: Context) {
 	
 	val database = RSSDatabase.getInstance(context)
 	
-	fun getChannels(): LiveData<ArrayList<Channel>> {
-		val data = MutableLiveData<ArrayList<Channel>>()
-		data.value = arrayListOf()
-		
-		thread(start = true) {
-			val list = database?.channelsDao()?.getAll() ?: emptyList()
-			Handler(context.mainLooper).post { data.value = ArrayList(list) }
-		}
-		
-		return data
+	fun getChannels(consumer: Consumer<List<Channel>>) {
+		thread(start = true) { subscribe(database?.channelsDao()?.getAll(), consumer) }
 	}
 	
-	fun isExist(channel: Channel): Boolean {
-		val list = database?.channelsDao()?.get(channel.link)
-		return list != null && list.isNotEmpty()
+	fun isExist(id: String): Boolean {
+		val list = database?.channelsDao()?.get(id)
+		return list != null
 	}
 	
-	fun isExist(item: Item): Boolean {
+	private fun isExist(item: Item): Boolean {
 		val list = database?.itemsDao()?.getByTitleAndChannel(item.title, item.channelId)
 		return list != null && list.isNotEmpty()
+	}
+	
+	fun update(channel: Channel) {
+		thread(start = true) { database?.channelsDao()?.update(channel) }
 	}
 	
 	fun addChannel(channel: Channel) {
 		thread(start = true) { database?.channelsDao()?.insertOrReplace(channel) }
 	}
 	
-	fun deleteChannel(channel: Channel) {
-		thread(start = true) { database?.channelsDao()?.delete(channel) }
-	}
-	
 	fun deleteChannelById(id: String) {
+		val channel = database?.channelsDao()?.get(id)
+		if (channel != null)
+			database?.channelsDao()?.delete(channel)
+	}
+	
+	fun getMessages(link: String, consumer: Consumer<List<Item>>, errorUpdate: (ErrorType) -> Unit = {}) {
 		thread(start = true) {
-			val list = database?.channelsDao()?.get(id)
-			if ((list != null && list.isNotEmpty())) {
-				database?.channelsDao()?.delete(list[0])
-			}
+			subscribe(database?.itemsDao()?.getAllByChannel(link), consumer)
+			updateMessages(link, errorUpdate = errorUpdate)
 		}
 	}
 	
-	fun getMessages(link: String): LiveData<ArrayList<Item>> {
-		val data = MutableLiveData<ArrayList<Item>>()
-		setValue(data, arrayListOf())
-		
-		thread(start = true) {
-			val controller = RssController(link)
-			val list = database?.itemsDao()?.getAllByChannel(link) ?: emptyList()
-			setValue(data, list)
-			
-			controller.rssService.getFeed(object : OnFeedRequestSuccessListener {
-				override fun success(feeds: ArrayList<FeedItem>) {
-					thread(start = true) {
-						val itemsNetwork = arrayListOf<Item>()
-						feeds.forEach {
-							itemsNetwork.add(Item(it.pubDate, it.title, it.link, it.description, link))
+	fun updateMessages(link: String, onDataNotChangedListener: () -> Unit = {}, errorUpdate: (ErrorType) -> Unit = {}) {
+		RssLoader(link).getFeed(object : OnFeedRequestListener {
+			override fun success(feeds: ArrayList<Item>) {
+				thread(start = true) {
+					
+					var isDataChanged = false
+					feeds.forEach {
+						if (!isExist(it)) {
+							isDataChanged = true
+							database?.itemsDao()?.insertOrReplace(it)
 						}
-						
-						itemsNetwork.forEach {
-							if (!isExist(it))
-								database?.itemsDao()?.insertOrReplace(it)
-						}
-						
-						
-						val list = database?.itemsDao()?.getAllByChannel(link) ?: emptyList()
-						setValue(data, list)
 					}
+					
+					if (!isDataChanged)
+						onDataNotChangedListener.invoke()
 				}
-			})
-		}
-		return data
+			}
+			
+			override fun error(error: ErrorType) {
+				errorUpdate.invoke(error)
+				onDataNotChangedListener.invoke()
+			}
+		})
 	}
 	
+	private fun <T> subscribe(flowable: Flowable<T>?, consumer: Consumer<T>) {
+		flowable?.apply {
+			observeOn(AndroidSchedulers.mainThread())
+					.subscribe(consumer)
+		}
+	}
 	
-	fun setValue(data: MutableLiveData<ArrayList<Item>>, list: List<Item>) {
-		Handler(context.mainLooper).post { data.value = ArrayList(list) }
+	fun updateChannel(oldChannel: Channel, newChannel: Channel) {
+		if (oldChannel.link != newChannel.link) {
+			deleteChannelById(oldChannel.link)
+			addChannel(newChannel)
+		} else update(newChannel)
 	}
 }

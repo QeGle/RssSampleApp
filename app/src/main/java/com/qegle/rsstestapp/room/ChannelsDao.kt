@@ -1,20 +1,18 @@
 package com.qegle.rsstestapp.room
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
+import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
-import android.arch.persistence.room.Query
 import com.qegle.rsstestapp.model.room.Channel
+import io.reactivex.Flowable
 
 @Dao
 interface ChannelsDao {
 	
 	@Query("SELECT * from Channel WHERE link LIKE :link")
-	fun get(link: String): List<Channel>
+	fun get(link: String): Channel
 	
 	@Query("SELECT * from Channel")
-	fun getAll(): List<Channel>
+	fun getAll(): Flowable<List<Channel>>
 	
 	@Insert(onConflict = REPLACE)
 	fun insertOrReplace(channel: Channel)
@@ -24,4 +22,7 @@ interface ChannelsDao {
 	
 	@Query("DELETE from Channel")
 	fun deleteAll()
+	
+	@Update
+	fun update(channel: Channel)
 }

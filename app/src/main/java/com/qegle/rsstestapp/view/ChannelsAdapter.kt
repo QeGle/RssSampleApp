@@ -1,9 +1,12 @@
 package com.qegle.rsstestapp.view
 
+import android.content.Context
+import android.os.Vibrator
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.qegle.rsstestapp.R
 import com.qegle.rsstestapp.model.room.Channel
 import kotlinx.android.synthetic.main.v_channel.view.*
@@ -26,10 +29,11 @@ class ChannelsAdapter : RecyclerView.Adapter<ChannelsAdapter.ChannelsViewHolder>
 		
 		holder.tvUrl.text = link
 		holder.root.setOnLongClickListener {
-			onChannelClickListener?.onLongClick(channel.link)
+			val vibrator = it.context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+			vibrator.vibrate(50)
+			onChannelClickListener?.onLongClick(channel)
 			true
 		}
-		
 		holder.root.setOnClickListener { onChannelClickListener?.onClick(channel.link) }
 	}
 	
@@ -43,8 +47,8 @@ class ChannelsAdapter : RecyclerView.Adapter<ChannelsAdapter.ChannelsViewHolder>
 	
 	class ChannelsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 		val root = view
-		val tvTitle = view.tvTitle
-		val tvUrl = view.tvUrl
+		val tvTitle: TextView = view.tvTitle
+		val tvUrl: TextView = view.tvUrl
 	}
 	
 	
