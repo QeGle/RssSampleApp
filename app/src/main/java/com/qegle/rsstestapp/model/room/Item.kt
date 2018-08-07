@@ -12,7 +12,7 @@ import android.arch.persistence.room.PrimaryKey
 class Item(
            var date: String,
            var title: String,
-           var link: String,
+           var link: String?,
            var description: String,
            var channelId: String,
            @PrimaryKey(autoGenerate = true)

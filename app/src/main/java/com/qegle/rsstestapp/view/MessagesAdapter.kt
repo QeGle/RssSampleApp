@@ -9,14 +9,20 @@ import com.qegle.rsstestapp.model.room.Item
 import kotlinx.android.synthetic.main.v_message.view.*
 
 class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ChannelsViewHolder>() {
-	var messagesArrayList: ArrayList<Item> = arrayListOf()
+	private var messagesArrayList: ArrayList<Item> = arrayListOf()
 	var onItemClickListener: OnItemClickListener? = null
 	override fun onBindViewHolder(holder: ChannelsViewHolder, position: Int) {
-		val rssMessage = messagesArrayList[position]
-		holder.tvTitle.text = rssMessage.title
-		holder.tvDate.text = rssMessage.date
-		holder.tvDesc.text = rssMessage.description
-		holder.root.setOnClickListener { onItemClickListener?.onClick(rssMessage.link) }
+		val item = messagesArrayList[position]
+		holder.tvTitle.text = item.title
+		holder.tvDate.text = item.date
+		holder.tvDesc.text = item.description
+		holder.ivLink.visibility = if (item.link != null) View.VISIBLE else View.GONE
+		
+		holder.root.setOnClickListener {
+			val link = item.link
+			if (link != null)
+				onItemClickListener?.onClick(link)
+		}
 	}
 	
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelsViewHolder {
@@ -32,6 +38,7 @@ class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ChannelsViewHolder>
 		val tvTitle = view.tvTitle
 		val tvDate = view.tvDate
 		val tvDesc = view.tvDesc
+		val ivLink = view.ivLink
 	}
 	
 	

@@ -61,7 +61,7 @@ class RSSRepository(val context: Context) {
 		
 		thread(start = true) {
 			val controller = RssController(link)
-			val list = database?.itemsDao()?.getAll() ?: emptyList()
+			val list = database?.itemsDao()?.getAllByChannel(link) ?: emptyList()
 			setValue(data, list)
 			
 			controller.rssService.getFeed(object : OnFeedRequestSuccessListener {
@@ -78,7 +78,7 @@ class RSSRepository(val context: Context) {
 						}
 						
 						
-						val list = database?.itemsDao()?.getAll() ?: emptyList()
+						val list = database?.itemsDao()?.getAllByChannel(link) ?: emptyList()
 						setValue(data, list)
 					}
 				}

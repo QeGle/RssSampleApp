@@ -13,7 +13,11 @@ object RESTServiceGenerator {
 			.connectTimeout(10, TimeUnit.SECONDS)
 	
 	fun <S> createService(serviceClass: Class<S>, baseUrl: String): S {
-		Log.d("createService", "createService: baseUrl $baseUrl")
+		var url = baseUrl
+		
+		Log.d("createService", "createService: baseUrl $url")
+		if (!url.endsWith("/"))
+			url += "/"
 		httpClient.addInterceptor { chain ->
 			val original = chain.request()
 			val requestBuilder = original.newBuilder()
@@ -25,7 +29,7 @@ object RESTServiceGenerator {
 		
 		val client = httpClient.build()
 		val builder = Retrofit.Builder()
-				.baseUrl(baseUrl)
+				.baseUrl(url)
 				.addConverterFactory(SimpleXmlConverterFactory.create())
 		val retrofit = builder.client(client).build()
 		return retrofit.create(serviceClass)

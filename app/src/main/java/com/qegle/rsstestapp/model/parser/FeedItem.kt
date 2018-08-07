@@ -17,7 +17,7 @@ class FeedItem : Serializable {
 	
 	@get:Element(name = "link")
 	@set:Element(name = "link")
-	var link: String = ""
+	var link: String? = null
 	
 	@get:Element(name = "description")
 	@set:Element(name = "description")
