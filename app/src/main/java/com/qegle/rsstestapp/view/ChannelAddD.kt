@@ -11,11 +11,6 @@ import com.qegle.rsstestapp.util.ErrorType
 import kotlinx.android.synthetic.main.d_channel_add.*
 import kotlin.concurrent.thread
 
-
-/**
- * Created by Sergey Makhaev on 04.10.2017.
- */
-
 class ChannelAddD : android.support.v4.app.DialogFragment() {
 	var onChannelAddListener: OnChannelAddListener? = null
 	
@@ -37,25 +32,27 @@ class ChannelAddD : android.support.v4.app.DialogFragment() {
 		btnCancel.setOnClickListener { dismiss() }
 	}
 	
+	
+	//проверка корректности урла по Patterns.WEB_URL.matcher
 	private fun addChannel(isUpdate: Boolean) {
-		val name = etTitle.text?.toString()
-		val link = etLink.text?.toString()
+		val name = etTitle.text?.toString() ?: ""
+		val link = etLink.text?.toString() ?: ""
 		
 		thread(start = true) {
 			when {
-				name?.isEmpty() == true -> onChannelAddListener?.error(ErrorType.TITLE_EMPTY)
-				link?.isEmpty() == true -> onChannelAddListener?.error(ErrorType.LINK_EMPTY)
+				name.isEmpty() -> onChannelAddListener?.error(ErrorType.TITLE_EMPTY)
+				link.isEmpty() -> onChannelAddListener?.error(ErrorType.LINK_EMPTY)
 				isUpdate -> {
-					onChannelAddListener?.update(channel!!, Channel(name!!, link!!))
+					onChannelAddListener?.update(channel!!, Channel(name, link))
 					dismiss()
 				}
-				link?.let { onChannelAddListener?.isExist(it) } == true -> {
+				onChannelAddListener?.isExist(link) == true -> {
 					onChannelAddListener?.error(ErrorType.ALREADY_EXIST)
 					
 				}
 				!Patterns.WEB_URL.matcher(link).matches() -> onChannelAddListener?.error(ErrorType.LINK_NOT_VALID)
 				else -> {
-					onChannelAddListener?.add(Channel(name!!, link!!))
+					onChannelAddListener?.add(Channel(name, link))
 					dismiss()
 				}
 			}

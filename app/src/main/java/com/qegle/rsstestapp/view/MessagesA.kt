@@ -27,7 +27,7 @@ class MessagesA : AppCompatActivity() {
 		rvMessages.adapter = messagesAdapter
 		rvMessages.layoutManager = LinearLayoutManager(this)
 		srLayout.setOnRefreshListener {
-			viewModel.update { srLayout?.isRefreshing = false }
+			viewModel.update { runOnUiThread { srLayout?.isRefreshing = false } }
 		}
 		
 		viewModel.errorSubject.subscribe {
